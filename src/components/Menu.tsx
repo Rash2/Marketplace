@@ -1,8 +1,8 @@
-import classes from "../styles/Menu.module.css";
+import classes from "./styles/Menu.module.css";
 import Button from "@mui/material/Button";
 import { useNavigate, Link } from "react-router-dom";
 import { useContext } from "react";
-import { UserContext } from "../../../App";
+import { UserContext } from "../App";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const Menu = () => {
         </Button>
       </div>
       <div className={classes.rightButtons}>
-        <Button variant="contained">Profile</Button>
+        <Button variant="contained" onClick={() => navigate("/app/profile")}>Profile</Button>
         <Button
           variant="outlined"
           color="warning"
