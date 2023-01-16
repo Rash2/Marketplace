@@ -1,0 +1,65 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+.leftContainer {
+    display: flex;
+    width: 60%;
+    flex-direction: column;
+}
+
+.rightContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 40%;
+    height: 100%;
+}
+
+.ownerContainer {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.ownerContainerTitle {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.ownerContainerDesc {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.cardsContainer {
+    display: flex;
+    width: 100%;
+    margin-top: 16px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.paperContainer {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.status {
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.button {
+    width: 200px;
+}
