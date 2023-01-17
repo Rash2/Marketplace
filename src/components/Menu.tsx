@@ -23,7 +23,7 @@ const Menu = () => {
         </Button>
         <Button
           variant="contained"
-          // onClick={() => navigate("/app/posts")}
+          onClick={() => navigate("/app/my-offers")}
           style={{ marginLeft: "16px" }}
         >
           My offers

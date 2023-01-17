@@ -1,10 +1,8 @@
 import { createContext, useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import Layout from "./components/Layout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import Posts from "./pages/posts/Posts";
-import { useNavigate } from "react-router-dom";
-import Layout from "./components/Layout";
 
 export type User = {
   username: string;
@@ -17,8 +15,6 @@ const App = () => {
 
   const [user, setUser] = useState<User>({username: "", password: ""});
   const navigate = useNavigate();
-
-  console.log("user", user)
 
   useEffect(() => {
     if(localStorage.getItem("user")) {

@@ -12,7 +12,7 @@ const PostCard = ({ post }: PostCardProps) => {
     const navigate = useNavigate();
 
     const goToPostPage = () => {
-        navigate(`/app/post/${post.id}`, {state: {ownerDetails: {email: post.ownerMail, phone: post.ownerPhone, username: post.ownerUsername}}})
+        navigate(`/app/post/${post.id}`)
     }
 
   return (
@@ -24,8 +24,8 @@ const PostCard = ({ post }: PostCardProps) => {
       <div className={classes.infoContainer}>
         <div className={classes.descriptionContainer}>
           <Typography variant="h6">{post.title}</Typography>
-          <Typography> Sold by {post.ownerUsername} (email: {post.ownerMail}, phone nr.: {post.ownerPhone})</Typography>
-          <Typography fontWeight={600}>{post.requestPrice} lei</Typography>
+          <Typography> Sold by {post.ownerUsername}</Typography>
+          <Typography fontWeight={600}>{post.total} lei</Typography>
         </div>
         <div className={classes.viewMore}><Button onClick={goToPostPage}>View</Button></div>
       </div>

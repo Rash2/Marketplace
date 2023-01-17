@@ -1,17 +1,12 @@
-import { useContext } from "react";
-import { Route, Routes, useParams } from "react-router-dom";
-import { UserContext } from "../App";
-import Menu from "./Menu";
+import { Route, Routes } from "react-router-dom";
+import MyOffers from "../pages/my-offers/MyOffers";
 import Post from "../pages/posts/Post";
 import Posts from "../pages/posts/Posts";
 import Profile from "../pages/profile/Profile";
+import Menu from "./Menu";
 import classes from "./styles/Layout.module.css";
 
 const Layout = () => {
-  const user: any = useContext(UserContext);
-
-  console.log("user", user);
-
   return (
     <div className={classes.container}>
       <Menu />
@@ -19,6 +14,7 @@ const Layout = () => {
         <Route path="posts" element={<Posts />} />
         <Route path="post/:id" element={<Post />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="my-offers" element={<MyOffers />} />
       </Routes>
     </div>
   );

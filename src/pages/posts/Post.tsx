@@ -11,8 +11,8 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
-import { useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import {  useParams } from "react-router-dom";
 import { UserContext } from "../../App";
 import ItemCard from "./components/ItemCard";
 import classes from "./styles/Post.module.css";
@@ -23,6 +23,15 @@ export type Item = {
   description: string;
 };
 
+type OwnerInfo = {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
 type PostDetails = {
   id: number;
   title: string;
@@ -30,39 +39,28 @@ type PostDetails = {
   total: number;
   status: string;
   items: Item[];
+  owner: OwnerInfo;
 };
 
 const Post = () => {
-  const [postDetails, setPostDetails] = useState<PostDetails>({
-    description: "Cel mai bun ever",
-    id: 1,
-    status: "ACTIVE",
-    title: "CUMPARATI BOMBE",
-    total: 200,
-    items: [
-      {
-        description: "Bomba1",
-        name: "Bomba1 lol",
-        price: 100,
-      },
-      {
-        description: "Bomba2",
-        name: "Bomba2 lol",
-        price: 100,
-      },
-      {
-        description: "Bomba3",
-        name: "Bomba2 lol",
-        price: 100,
-      },
-    ],
-  });
+  const [postDetails, setPostDetails] = useState<PostDetails | null>();
   const [makeOfferDialogOpen, setMakeOfferDialogOpen] = useState(false);
   const [offer, setOffer] = useState(0);
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
 
-  const { state } = useLocation();
   const userInfo: any = useContext(UserContext);
+  const { id } = useParams();
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/posts/${id}`, {
+        auth: {
+          ...userInfo.user,
+        },
+      })
+      .then((res) => setPostDetails(res.data))
+      .catch((err) => console.error(err));
+  }, []);
 
   const onChangeOffer = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -71,60 +69,65 @@ const Post = () => {
   };
 
   const onMakeOffer = () => {
-    axios
-      .post(
-        "http://localhost:8080/offers",
-        { postId: postDetails.id, offeredPrice: offer },
-        {
-          auth: {
-            ...userInfo.user,
-          },
-        }
-      )
-      .then((res) => {
-        console.log("offer", res.data);
-        setMakeOfferDialogOpen(false);
-        setSuccessSnackbarOpen(true);
-      })
-      .catch((err) => console.log(err));
+    if (postDetails) {
+      axios
+        .post(
+          "http://localhost:8080/offers",
+          { postId: postDetails.id, offeredPrice: offer },
+          {
+            auth: {
+              ...userInfo.user,
+            },
+          }
+        )
+        .then((res) => {
+          setMakeOfferDialogOpen(false);
+          setSuccessSnackbarOpen(true);
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
     <div className={classes.container}>
-      <div className={classes.leftContainer}>
-        <Paper className={classes.paperContainer}>
-          <div
-            className={classes.status}
-            style={{
-              backgroundColor:
-                postDetails.status === "ACTIVE" ? "greenyellow" : "salmon",
-              width: postDetails.status === "ACTIVE" ? "68px" : "83px",
-            }}
+      {postDetails ? (
+        <div className={classes.leftContainer}>
+          <Paper className={classes.paperContainer}>
+            <div
+              className={classes.status}
+              style={{
+                backgroundColor:
+                  postDetails.status === "AVAILABLE" ? "greenyellow" : "salmon",
+                width: postDetails.status === "AVAILABLE" ? "100px" : "120px",
+              }}
+            >
+              <Typography fontWeight={600}>{postDetails.status}</Typography>
+            </div>
+            <Typography variant="h5">{postDetails.title}</Typography>
+            <Typography fontSize={30} fontWeight={700}>
+              {postDetails.total} lei
+            </Typography>
+            <Typography variant="h5">
+              DESCRIPTION: {postDetails.description}
+            </Typography>
+          </Paper>
+          <Button
+            className={classes.button}
+            variant="contained"
+            onClick={() => setMakeOfferDialogOpen(true)}
+            style={{ marginTop: "8px" }}
           >
-            <Typography fontWeight={600}>{postDetails.status}</Typography>
+            Make an offer
+          </Button>
+          <div className={classes.cardsContainer}>
+            {postDetails.items.map((item, index) => (
+              <ItemCard item={item} key={index} />
+            ))}
           </div>
-          <Typography variant="h5">{postDetails.title}</Typography>
-          <Typography fontSize={30} fontWeight={700}>
-            {postDetails.total} lei
-          </Typography>
-          <Typography variant="h5">
-            DESCRIPTION: {postDetails.description}
-          </Typography>
-        </Paper>
-        <Button
-          className={classes.button}
-          variant="contained"
-          onClick={() => setMakeOfferDialogOpen(true)}
-          style={{marginTop: "8px"}}
-        >
-          Make an offer
-        </Button>
-        <div className={classes.cardsContainer}>
-          {postDetails.items.map((item, index) => (
-            <ItemCard item={item} key={index} />
-          ))}
         </div>
-      </div>
+      ) : (
+        <Typography variant="h4">No details available</Typography>
+      )}
       <div className={classes.rightContainer}>
         <Paper elevation={3} className={classes.ownerContainer}>
           <div className={classes.ownerContainerTitle}>
@@ -133,14 +136,17 @@ const Post = () => {
             </Typography>
           </div>
           <div className={classes.ownerContainerDesc}>
-            <Typography fontWeight={600} fontSize={20}>
-              Username: {state.ownerDetails.username}
+          <Typography fontWeight={600} fontSize={20}>
+              Name: {`${postDetails?.owner.firstName} ${postDetails?.owner.lastName}`}
             </Typography>
             <Typography fontWeight={600} fontSize={20}>
-              Email: {state.ownerDetails.email}
+              Username: {postDetails?.owner.username}
             </Typography>
             <Typography fontWeight={600} fontSize={20}>
-              Phone number: {state.ownerDetails.phone}
+              Email: {postDetails?.owner.email}
+            </Typography>
+            <Typography fontWeight={600} fontSize={20}>
+              Phone number: {postDetails?.owner.phone}
             </Typography>
           </div>
         </Paper>
